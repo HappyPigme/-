@@ -1,4 +1,185 @@
-<!DOCTYPE html>
+        // 댓글 관련 기능
+        let comments = [
+            {
+                id: 1,
+                author: '경제관찰자',
+                content: 'GDP 대비 46.8%면 다른 나라에 비해서는 양호한 편이네요. 하지만 증가 속도가 걱정됩니다.',
+                date: '2025.01.15 14:30',
+                password: '1234'
+            },
+            {
+                id: 2,
+                author: '재정걱정남',
+                content: '실시간으로 보니까 정말 빠르게 증가하네요... 😰 \n1인당 2천만원 넘는다는 게 실감이 안 났는데 이렇게 보니 심각함을 느낍니다.',
+                date: '2025.01.15 13:45',
+                password: '5678'
+            },
+            {
+                id: 3,
+                author: '대학생김씨',
+                content: '경제 공부하는데 도움 많이 됩니다! 다른 나라 비교도 있어서 좋네요 👍',
+                date: '2025.01.15 12:20',
+                password: '9999'
+            }
+        ];
+
+        // 글자 수 카운터
+        document.addEventListener('DOMContentLoaded', function() {
+            const textarea = document.getElementById('commentText');
+            const charCount = document.getElementById('charCount');
+            
+            textarea.addEventListener('input', function() {
+                const count = this.value.length;
+                charCount.textContent = count;
+                
+                if (count > 450) {
+                    charCount.style.color = '#e74c3c';
+                } else if (count > 400) {
+                    charCount.style.color = '#f39c12';
+                } else {
+                    charCount.style.color = '#666';
+                }
+            });
+        });
+
+        // 댓글 작성
+        function submitComment() {
+            const name = document.getElementById('commentName').value.trim();
+            const password = document.getElementById('commentPassword').value.trim();
+            const text = document.getElementById('commentText').value.trim();
+            
+            // 유효성 검사
+            if (!name || !password || !text) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (name.length > 20) {
+                alert('닉네임은 20자 이하로 입력해주세요.');
+                return;
+            }
+            
+            if (password.length !== 4 || !/^\d{4}$/.test(password)) {
+                alert('비밀번호는 4자리 숫자로 입력해주세요.');
+                return;
+            }
+            
+            if (text.length > 500) {
+                alert('댓글은 500자 이하로 입력해주세요.');
+                return;
+            }
+
+            // 새 댓글 객체 생성
+            const newComment = {
+                id: Date.now(),
+                author: name,
+                content: text,
+                date: new Date().toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).replace(/\./g, '.').replace(' ', ' '),
+                password: password
+            };
+
+            // 댓글 배열에 추가 (최신 댓글이 맨 위로)
+            comments.unshift(newComment);
+            
+            // 화면 업데이트
+            renderComments();
+            
+            // 폼 초기화
+            document.getElementById('commentName').value = '';
+            document.getElementById('commentPassword').value = '';
+            document.getElementById('commentText').value = '';
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('charCount').style.color = '#666';
+            
+            // 성공 메시지
+            alert('댓글이 등록되었습니다!');
+            
+            // Google Analytics 이벤트
+            gtag('event', 'comment_submit', {
+                'event_category': 'engagement',
+                'event_label': 'new_comment'
+            });
+        }
+
+        // 댓글 렌더링
+        function renderComments() {
+            const commentsList = document.getElementById('commentsList');
+            
+            if (comments.length === 0) {
+                commentsList.innerHTML = `
+                    <div class="comment-empty-state">
+                        <div class="emoji">💬</div>
+                        <div>첫 번째 댓글을 작성해보세요!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            commentsList.innerHTML = comments.map(comment => `
+                <div class="comment-item" data-comment-id="${comment.id}">
+                    <div class="comment-header">
+                        <div class="comment-author">${comment.author}</div>
+                        <div class="comment-date">${comment.date}</div>
+                        <button class="comment-delete" onclick="deleteComment(this)" title="삭제">🗑️</button>
+                    </div>
+                    <div class="comment-content">${comment.content}</div>
+                </div>
+            `).join('');
+        }
+
+        // 댓글 삭제
+        function deleteComment(button) {
+            const commentItem = button.closest('.comment-item');
+            const commentId = parseInt(commentItem.dataset.commentId);
+            const comment = comments.find(c => c.id === commentId);
+            
+            if (!comment) {
+                alert('댓글을 찾을 수 없습니다.');
+                return;
+            }
+            
+            const inputPassword = prompt('댓글 삭제를 위해 비밀번호를 입력해주세요:');
+            
+            if (!inputPassword) {
+                return; // 취소한 경우
+            }
+            
+            if (inputPassword !== comment.password) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+            
+            if (confirm('정말로 댓글을 삭제하시겠습니까?')) {
+                // 배열에서 댓글 제거
+                comments = comments.filter(c => c.id !== commentId);
+                
+                // 화면 업데이트
+                renderComments();
+                
+                alert('댓글이 삭제되었습니다.');
+                
+                // Google Analytics 이벤트
+                gtag('event', 'comment_delete', {
+                    'event_category': 'engagement',
+                    'event_label': 'delete_comment'
+                });
+            }
+        }            .social-share {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 0 10px;
+            }
+            
+            .social-btn {
+                font-size: 12px;
+                padding: 8px 12px;
+            }<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -356,6 +537,26 @@
                 margin: 15px auto;
             }
             
+            .comments-section {
+                margin: 15px 5px;
+                padding: 20px 15px;
+            }
+            
+            .comment-form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .comment-form-bottom {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            
+            .comment-submit-btn {
+                width: 100%;
+            }
+            
             .social-share {
                 flex-wrap: wrap;
                 gap: 10px;
@@ -465,76 +666,9 @@
             text-transform: uppercase;
         }
         
-        .newsletter-signup {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 30px 0;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
+
         
-        .newsletter-signup h3 {
-            margin-bottom: 15px;
-            font-size: 1.5em;
-        }
-        
-        .newsletter-form {
-            display: flex;
-            gap: 10px;
-            max-width: 400px;
-            margin: 20px auto 0;
-        }
-        
-        .newsletter-form input {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        .newsletter-form button {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s ease;
-        }
-        
-        .newsletter-form button:hover {
-            background: #ee5a24;
-        }
-        
-        .social-share {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .social-btn {
-            background: #3498db;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .social-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        
-        .social-btn.facebook { background: #3b5998; }
-        .social-btn.twitter { background: #1da1f2; }
-        .social-btn.kakao { background: #fee500; color: #000; }
+
         
         @media (max-width: 1200px) {
             .ad-banner.sidebar-ad {
@@ -578,12 +712,7 @@
                 최종 업데이트: <span id="lastUpdate"></span> | 데이터 기준: 기획재정부, 한국은행
             </p>
             
-            <!-- 소셜 공유 버튼 -->
-            <div class="social-share">
-                <a href="#" class="social-btn facebook" onclick="shareOnFacebook()">📘 페이스북</a>
-                <a href="#" class="social-btn twitter" onclick="shareOnTwitter()">🐦 트위터</a>
-                <a href="#" class="social-btn kakao" onclick="shareOnKakao()">💬 카카오톡</a>
-            </div>
+
         </div>
     </header>
 
@@ -666,15 +795,7 @@
                      data-full-width-responsive="true"></ins>
             </div>
 
-            <!-- 뉴스레터 구독 -->
-            <div class="newsletter-signup">
-                <h3>📧 경제 뉴스레터 구독</h3>
-                <p>매주 한국 경제 동향과 부채 분석 리포트를 받아보세요!</p>
-                <div class="newsletter-form">
-                    <input type="email" placeholder="이메일 주소를 입력하세요" id="email">
-                    <button onclick="subscribeNewsletter()">구독하기</button>
-                </div>
-            </div>
+
 
             <div class="comparison">
                 <h2>🌏 주요국 정부부채 GDP 대비 비율 (2024)</h2>
@@ -733,6 +854,63 @@
                 <p>정부는 재정건전성 유지를 위해 지출 효율화, 세입 기반 확충, 국가채무 증가율 관리 등을 통해 지속가능한 재정운용을 추진하고 있습니다.</p>
             </div>
 
+            <!-- 댓글 섹션 -->
+            <div class="comments-section">
+                <h2>💬 댓글</h2>
+                
+                <!-- 댓글 작성 폼 -->
+                <div class="comment-form">
+                    <div class="comment-form-row">
+                        <input type="text" id="commentName" placeholder="닉네임" maxlength="20" required>
+                        <input type="password" id="commentPassword" placeholder="비밀번호 (4자리)" maxlength="4" required>
+                    </div>
+                    <textarea id="commentText" placeholder="댓글을 입력하세요... (최대 500자)" maxlength="500" rows="4" required></textarea>
+                    <div class="comment-form-bottom">
+                        <div class="char-count">
+                            <span id="charCount">0</span>/500
+                        </div>
+                        <button onclick="submitComment()" class="comment-submit-btn">댓글 작성</button>
+                    </div>
+                </div>
+                
+                <!-- 댓글 목록 -->
+                <div class="comments-list" id="commentsList">
+                    <!-- 예시 댓글들 -->
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="comment-author">경제관찰자</div>
+                            <div class="comment-date">2025.01.15 14:30</div>
+                            <button class="comment-delete" onclick="deleteComment(this)" title="삭제">🗑️</button>
+                        </div>
+                        <div class="comment-content">
+                            GDP 대비 46.8%면 다른 나라에 비해서는 양호한 편이네요. 하지만 증가 속도가 걱정됩니다.
+                        </div>
+                    </div>
+                    
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="comment-author">재정걱정남</div>
+                            <div class="comment-date">2025.01.15 13:45</div>
+                            <button class="comment-delete" onclick="deleteComment(this)" title="삭제">🗑️</button>
+                        </div>
+                        <div class="comment-content">
+                            실시간으로 보니까 정말 빠르게 증가하네요... 😰 
+                            1인당 2천만원 넘는다는 게 실감이 안 났는데 이렇게 보니 심각함을 느낍니다.
+                        </div>
+                    </div>
+                    
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="comment-author">대학생김씨</div>
+                            <div class="comment-date">2025.01.15 12:20</div>
+                            <button class="comment-delete" onclick="deleteComment(this)" title="삭제">🗑️</button>
+                        </div>
+                        <div class="comment-content">
+                            경제 공부하는데 도움 많이 됩니다! 다른 나라 비교도 있어서 좋네요 👍
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- 하단 광고 배너 -->
             <div class="ad-banner">
                 <div class="ad-label">Advertisement</div>
@@ -861,41 +1039,7 @@
             (adsbygoogle = window.adsbygoogle || []).push({});
         }
         
-        // 소셜 공유 기능
-        function shareOnFacebook() {
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent('대한민국 국가부채 실시간 현황을 확인해보세요!');
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
-        }
-        
-        function shareOnTwitter() {
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent('🇰🇷 대한민국 국가부채가 실시간으로 증가하고 있습니다! 현재 상황을 확인해보세요.');
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=400');
-        }
-        
-        function shareOnKakao() {
-            // 카카오 SDK가 로드되었다면 카카오톡 공유, 아니면 URL 복사
-            if (typeof Kakao !== 'undefined') {
-                Kakao.Link.sendDefault({
-                    objectType: 'feed',
-                    content: {
-                        title: '🇰🇷 대한민국 국가부채 실시간 시계',
-                        description: '한국의 국가부채 현황을 실시간으로 확인하세요!',
-                        imageUrl: window.location.origin + '/favicon.ico',
-                        link: {
-                            mobileWebUrl: window.location.href,
-                            webUrl: window.location.href
-                        }
-                    }
-                });
-            } else {
-                // URL 복사
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    alert('링크가 복사되었습니다! 카카오톡에서 공유해보세요.');
-                });
-            }
-        }
+
         
         // 뉴스레터 구독
         function subscribeNewsletter() {
