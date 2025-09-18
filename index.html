@@ -22,7 +22,7 @@
         .increase-item { background: #3498db; color: white; padding: 15px 20px; border-radius: 10px; min-width: 180px; }
         .increase-item h3 { margin-bottom: 10px; font-size: 1.1em; }
         .increase-item .amount { font-size: 1.4em; font-weight: bold; }
-        .source { font-size: 0.85em; color: #555; margin-top: 8px; }
+        .source { font-size: 0.85em; color: #555; margin-top: 8px; line-height: 1.4; }
         .source a { color: #2980b9; text-decoration: none; }
     </style>
 </head>
@@ -57,22 +57,34 @@
             <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
                 <h3>🏛️ GDP 대비 국가채무 비율</h3>
                 <div class="stat-value">47.5% (OECD 평균 71.1%)</div>
-                <div class="source"><a href="https://ecos.bok.or.kr" target="_blank">출처: 한국은행 경제통계시스템 (2024년도 기준)</a></div>
+                <div class="source">
+                    <a href="https://ecos.bok.or.kr" target="_blank">출처: 한국은행 경제통계시스템</a><br>
+                    (2024년도 기준)
+                </div>
             </div>
             <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
                 <h3>📊 공공부문 부채 (D3)</h3>
                 <div class="stat-value">1,713조원</div>
-                <div class="source"><a href="https://kosis.kr" target="_blank">출처: 통계청 KOSIS (2024년도 기준)</a></div>
+                <div class="source">
+                    <a href="https://kosis.kr" target="_blank">출처: 통계청 KOSIS</a><br>
+                    (2024년도 기준)
+                </div>
             </div>
             <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
                 <h3>💰 국가채무 이자비용</h3>
-                <div class="stat-value">30조원 (2025년도 예상치)</div>
-                <div class="source"><a href="https://www.moef.go.kr" target="_blank">출처: 기획재정부</a></div>
+                <div class="stat-value">30조원</div>
+                <div class="source">
+                    <a href="https://www.moef.go.kr" target="_blank">출처: 기획재정부</a><br>
+                    (2025년도 예상치)
+                </div>
             </div>
             <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
                 <h3>👥 총인구</h3>
                 <div class="stat-value">5,112만명</div>
-                <div class="source"><a href="https://kosis.kr" target="_blank">출처: 통계청 인구동향 (2024년도 기준)</a></div>
+                <div class="source">
+                    <a href="https://kosis.kr" target="_blank">출처: 통계청 인구동향</a><br>
+                    (2024년도 기준)
+                </div>
             </div>
         </div>
     </div>
@@ -91,7 +103,10 @@
             const currentDebt = INITIAL_DEBT + (DEBT_PER_SECOND * elapsed);
 
             document.getElementById('debtAmount').textContent = Math.floor(currentDebt).toLocaleString('ko-KR') + '원';
-            document.getElementById('perCapita').textContent = Math.floor(currentDebt / POPULATION).toLocaleString('ko-KR');
+
+            // 국민 1인당 부담 실시간 반영 (단위 원)
+            const perCapita = Math.floor(currentDebt / POPULATION);
+            document.getElementById('perCapita').textContent = perCapita.toLocaleString('ko-KR');
 
             document.getElementById('perSecond').textContent = '+' + Math.floor(DEBT_PER_SECOND).toLocaleString('ko-KR') + '원';
             document.getElementById('perMinute').textContent = '+' + Math.floor(DEBT_PER_SECOND * 60).toLocaleString('ko-KR') + '원';
