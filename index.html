@@ -11,251 +11,95 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'GA_MEASUREMENT_ID');
-    </script>
     <style>
-        /* 기존 CSS 전부 유지 */
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f5f6fa; }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .debt-display { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center; }
+        .debt-label { font-size: 1.3em; margin-bottom: 15px; font-weight: 600; }
+        .debt-amount { font-size: 3em; font-weight: 800; color: #e74c3c; margin-bottom: 5px; }
+        .debt-per-capita { font-size: 1.1em; color: #e67e22; margin-bottom: 20px; }
+        .increase-info { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .increase-item { background: #3498db; color: white; padding: 15px 20px; border-radius: 10px; min-width: 180px; }
+        .increase-item h3 { margin-bottom: 10px; font-size: 1.1em; }
+        .increase-item .amount { font-size: 1.4em; font-weight: bold; }
+        .source { font-size: 0.85em; color: #555; margin-top: 8px; }
+        .source a { color: #2980b9; text-decoration: none; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="ad-banner header-ad">
-                <div class="ad-label">Advertisement</div>
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
-                     data-ad-slot="XXXXXXXXXX"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-            </div>
+    <div class="container">
+        <div class="debt-display">
+            <div class="debt-label">🇰🇷 대한민국 국가채무 (D1)</div>
+            <div class="debt-amount blinking" id="debtAmount">1,196,800,000,000,000원</div>
+            <div class="debt-per-capita">국민 1인당 부담: <span id="perCapita">23,400,000</span>원</div>
 
-            <h1>대한민국 국가부채 실시간 시계</h1>
-            <p class="subtitle">Republic of Korea National Debt Clock</p>
-            <p style="text-align: center; color: #666; font-size: 0.9em;">
-                최종 업데이트: <span id="lastUpdate"></span> | 데이터 기준: 기획재정부, 한국은행
-            </p>
-        </div>
-    </header>
-
-    <div class="ad-banner sidebar-ad">
-        <div class="ad-label">Advertisement</div>
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
-             data-ad-slot="XXXXXXXXXX"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-    </div>
-
-    <main class="main-content">
-        <div class="container">
-            <div class="debt-display">
-                <div class="debt-label">🇰🇷 대한민국 국가채무 (D1)</div>
-                <div class="debt-amount blinking" id="debtAmount">1,175,000,000,000,000</div>
-                <div class="debt-unit">원 (약 1,175조원)</div>
-                <div class="debt-per-capita">국민 1인당 부담: <span id="perCapita">22,980,000</span>원</div>
-                <div class="increase-info">
-                    <div class="increase-item">
-                        <h3>초당 증가</h3>
-                        <div class="amount" id="perSecond">+1,580,000</div>
-                        <div>원</div>
-                    </div>
-                    <div class="increase-item">
-                        <h3>분당 증가</h3>
-                        <div class="amount" id="perMinute">+94,800,000</div>
-                        <div>원</div>
-                    </div>
-                    <div class="increase-item">
-                        <h3>일일 증가</h3>
-                        <div class="amount" id="perDay">+136,500,000,000</div>
-                        <div>원</div>
-                    </div>
-                    <div class="increase-item">
-                        <h3>연간 증가율</h3>
-                        <div class="amount">4.5%</div>
-                        <div>(전년 대비)</div>
-                    </div>
+            <div class="increase-info">
+                <div class="increase-item">
+                    <h3>초당 증가</h3>
+                    <div class="amount" id="perSecond">+1,650,000원</div>
                 </div>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>🏛️ GDP 대비 국가채무 비율</h3>
-                    <div class="stat-value">46.8%</div>
-                    <p>2024년 기준, OECD 평균(71.1%) 대비 양호한 수준</p>
+                <div class="increase-item">
+                    <h3>분당 증가</h3>
+                    <div class="amount" id="perMinute">+99,000,000원</div>
                 </div>
-                <div class="stat-card">
-                    <h3>📊 공공부문 부채 (D3)</h3>
-                    <div class="stat-value">1,673조원</div>
-                    <p>GDP 대비 69.7% (2023년 기준)</p>
+                <div class="increase-item">
+                    <h3>일일 증가</h3>
+                    <div class="amount" id="perDay">+14,300억원</div>
                 </div>
-                <div class="stat-card">
-                    <h3>💰 국가채무 이자비용</h3>
-                    <div class="stat-value">56.8조원</div>
-                    <p>연간 이자 지급액 (2024년 예산 기준)</p>
+                <div class="increase-item">
+                    <h3>연간 증가율</h3>
+                    <div class="amount">4.5%</div>
                 </div>
-                <div class="stat-card">
-                    <h3>👥 총인구</h3>
-                    <div class="stat-value">5,115만명</div>
-                    <p>2024년 기준 대한민국 인구수</p>
-                </div>
-            </div>
-
-            <div class="ad-banner">
-                <div class="ad-label">Advertisement</div>
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
-                     data-ad-slot="XXXXXXXXXX"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
-            </div>
-
-            <div class="comparison">
-                <h2>🌏 주요국 정부부채 GDP 대비 비율 (2024)</h2>
-                <div class="comparison-grid">
-                    <div class="comparison-item korea">
-                        <h4>🇰🇷 대한민국</h4>
-                        <div class="value">46.8%</div>
-                        <div>양호</div>
-                    </div>
-                    <div class="comparison-item">
-                        <h4>🇺🇸 미국</h4>
-                        <div class="value">126.4%</div>
-                        <div>높음</div>
-                    </div>
-                    <div class="comparison-item">
-                        <h4>🇯🇵 일본</h4>
-                        <div class="value">261.5%</div>
-                        <div>매우 높음</div>
-                    </div>
-                    <div class="comparison-item">
-                        <h4>🇩🇪 독일</h4>
-                        <div class="value">63.6%</div>
-                        <div>보통</div>
-                    </div>
-                    <div class="comparison-item">
-                        <h4>🇫🇷 프랑스</h4>
-                        <div class="value">110.6%</div>
-                        <div>높음</div>
-                    </div>
-                    <div class="comparison-item">
-                        <h4>🌍 OECD 평균</h4>
-                        <div class="value">71.1%</div>
-                        <div>기준</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="analysis">
-                <h2>📈 한국 국가부채 현황 분석</h2>
-                <p><strong>긍정적 측면:</strong></p>
-                <ul>
-                    <li>GDP 대비 국가부채 비율이 OECD 평균(71.1%)보다 낮은 46.8% 수준</li>
-                    <li>일본(261.5%), 미국(126.4%) 등 주요국 대비 상대적으로 건전한 재정상태</li>
-                    <li>국가신용등급 AA 수준으로 국제적 신뢰도 유지</li>
-                </ul>
-                <p><strong>주의사항:</strong></p>
-                <ul>
-                    <li>코로나19 이후 국가부채 증가세가 지속되고 있음</li>
-                    <li>고령화로 인한 복지비용 증가로 장기적 재정부담 우려</li>
-                    <li>저성장 기조에서 부채 증가율이 경제성장률을 상회하는 추세</li>
-                    <li>지방정부 부채와 공기업 부채 등 숨은 부채에 대한 관리 필요</li>
-                </ul>
-                <p><strong>정책 방향:</strong></p>
-                <p>정부는 재정건전성 유지를 위해 지출 효율화, 세입 기반 확충, 국가채무 증가율 관리 등을 통해 지속가능한 재정운용을 추진하고 있습니다.</p>
-            </div>
-
-            <div class="ad-banner">
-                <div class="ad-label">Advertisement</div>
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
-                     data-ad-slot="XXXXXXXXXX"
-                     data-ad-format="auto"
-                     data-full-width-responsive="true"></ins>
             </div>
         </div>
-    </main>
 
-    <div class="ad-banner mobile-ad" id="mobileAd" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="flex: 1;">
-                <div class="ad-label">Advertisement</div>
-                <ins class="adsbygoogle"
-                     style="display:inline-block;width:300px;height:50px"
-                     data-ad-client="ca-pub-XXXXXXXXXXXXXXXXX"
-                     data-ad-slot="XXXXXXXXXX"></ins>
+        <div class="stats-grid" style="margin-top:30px; display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
+            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
+                <h3>🏛️ GDP 대비 국가채무 비율</h3>
+                <div class="stat-value">47.5% (OECD 평균 71.1%)</div>
+                <div class="source"><a href="https://ecos.bok.or.kr" target="_blank">출처: 한국은행 경제통계시스템 (2024년도 기준)</a></div>
             </div>
-            <button onclick="closeMobileAd()" style="background: #ccc; border: none; padding: 5px 10px; margin-left: 10px; border-radius: 3px; cursor: pointer;">✕</button>
+            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
+                <h3>📊 공공부문 부채 (D3)</h3>
+                <div class="stat-value">1,713조원</div>
+                <div class="source"><a href="https://kosis.kr" target="_blank">출처: 통계청 KOSIS (2024년도 기준)</a></div>
+            </div>
+            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
+                <h3>💰 국가채무 이자비용</h3>
+                <div class="stat-value">30조원 (2025년도 예상치)</div>
+                <div class="source"><a href="https://www.moef.go.kr" target="_blank">출처: 기획재정부</a></div>
+            </div>
+            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
+                <h3>👥 총인구</h3>
+                <div class="stat-value">5,112만명</div>
+                <div class="source"><a href="https://kosis.kr" target="_blank">출처: 통계청 인구동향 (2024년도 기준)</a></div>
+            </div>
         </div>
     </div>
-
-    <footer class="footer">
-        <div class="container">
-            <p>© 2025 대한민국 국가부채 시계 | 교육 및 정보 제공 목적</p>
-            <p>데이터 출처: 기획재정부, 한국은행, 통계청, OECD</p>
-            <p>면책 조항: 본 사이트의 수치는 추정치이며, 공식 발표 수치와 차이가 있을 수 있습니다.</p>
-        </div>
-    </footer>
 
     <script>
-        // 공유/뉴스레터 함수 삭제, 나머지 유지
-        const INITIAL_DEBT = 1175000000000000;
+        const INITIAL_DEBT = 1196800000000000; // 1,196.8조원
         const ANNUAL_INCREASE_RATE = 0.045;
-        const POPULATION = 51150000;
+        const POPULATION = 51120000; // 약 5,112만명
+
         const DEBT_PER_SECOND = (INITIAL_DEBT * ANNUAL_INCREASE_RATE) / (365 * 24 * 60 * 60);
-        const START_TIME = new Date('2024-01-01').getTime();
+        const START_TIME = new Date('2025-01-01').getTime();
 
         function updateDebtClock() {
             const now = Date.now();
             const elapsed = (now - START_TIME) / 1000;
             const currentDebt = INITIAL_DEBT + (DEBT_PER_SECOND * elapsed);
-            const debtElement = document.getElementById('debtAmount');
-            const formattedDebt = Math.floor(currentDebt).toLocaleString('ko-KR');
-            debtElement.textContent = formattedDebt;
-            document.getElementById('perCapita').textContent = Math.floor(currentDebt / POPULATION).toLocaleString('ko-KR');
-            document.getElementById('perSecond').textContent = '+' + Math.floor(DEBT_PER_SECOND).toLocaleString('ko-KR');
-            document.getElementById('perMinute').textContent = '+' + Math.floor(DEBT_PER_SECOND * 60).toLocaleString('ko-KR');
-            document.getElementById('perDay').textContent = '+' + Math.floor(DEBT_PER_SECOND * 60 * 60 * 24).toLocaleString('ko-KR');
-        }
 
-        function updateLastUpdateTime() {
-            const now = new Date();
-            document.getElementById('lastUpdate').textContent = now.toLocaleString('ko-KR');
+            document.getElementById('debtAmount').textContent = Math.floor(currentDebt).toLocaleString('ko-KR') + '원';
+            document.getElementById('perCapita').textContent = Math.floor(currentDebt / POPULATION).toLocaleString('ko-KR');
+
+            document.getElementById('perSecond').textContent = '+' + Math.floor(DEBT_PER_SECOND).toLocaleString('ko-KR') + '원';
+            document.getElementById('perMinute').textContent = '+' + Math.floor(DEBT_PER_SECOND * 60).toLocaleString('ko-KR') + '원';
+            document.getElementById('perDay').textContent = '+' + Math.floor(DEBT_PER_SECOND * 60 * 60 * 24 / 100000000).toLocaleString('ko-KR') + '억원';
         }
 
         updateDebtClock();
-        updateLastUpdateTime();
-        setInterval(() => { updateDebtClock(); updateLastUpdateTime(); }, 1000);
-
-        function loadAds() {
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        }
-
-        function showMobileAd() {
-            if (window.innerWidth <= 768) {
-                document.getElementById('mobileAd').style.display = 'block';
-                document.body.style.paddingBottom = '80px';
-            }
-        }
-
-        function closeMobileAd() {
-            document.getElementById('mobileAd').style.display = 'none';
-            document.body.style.paddingBottom = '0';
-        }
-
-        window.addEventListener('load', function() {
-            loadAds();
-            setTimeout(showMobileAd, 5000);
-        });
+        setInterval(updateDebtClock, 1000);
     </script>
 </body>
 </html>
