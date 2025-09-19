@@ -4,117 +4,1057 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>대한민국 국가부채 실시간 시계 | 한국 공공부채 현황</title>
-    <meta name="description" content="대한민국의 국가부채와 공공부채를 실시간으로 확인하는 부채 시계입니다.">
+    <meta name="description" content="대한민국의 국가부채와 공공부채를 실시간으로 확인하는 부채 시계입니다. 다른 국가와의 비교, 역사적 추이, 상세 통계를 제공합니다.">
     <meta name="keywords" content="국가부채, 국가채무, 공공부채, 한국 경제, 재정, GDP, 부채시계, 실시간">
-
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="대한민국 국가부채 실시간 현황">
+    <meta property="og:description" content="실시간으로 업데이트되는 한국의 국가채무 현황을 확인하세요">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://example.com/debt-clock-preview.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background: #f5f6fa; }
-        .container { max-width: 1200px; margin: auto; padding: 20px; }
-        .debt-display { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center; }
-        .debt-label { font-size: 1.3em; margin-bottom: 15px; font-weight: 600; }
-        .debt-amount { font-size: 3em; font-weight: 800; color: #e74c3c; margin-bottom: 5px; }
-        .debt-per-capita { font-size: 1.1em; color: #e67e22; margin-bottom: 20px; }
-        .increase-info { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-        .increase-item { background: #3498db; color: white; padding: 15px 20px; border-radius: 10px; min-width: 180px; }
-        .increase-item h3 { margin-bottom: 10px; font-size: 1.1em; }
-        .increase-item .amount { font-size: 1.4em; font-weight: bold; }
-        .source { font-size: 0.85em; color: #555; margin-top: 8px; line-height: 1.4; }
-        .source a { color: #2980b9; text-decoration: none; }
+        :root {
+            --primary-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --success-color: #27ae60;
+            --info-color: #3498db;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --light-bg: #1a1a2e;
+            --primary-color: #eee;
+            --card-bg: #16213e;
+            --text-color: #eee;
+            --card-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--light-bg);
+            color: var(--primary-color);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><path d="M0 20L100 0v20z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: 100px 20px;
+            animation: wave 10s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .theme-toggle, .share-btn {
+            background: var(--info-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .theme-toggle:hover, .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .main-debt-display {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-debt-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 0.1; transform: scale(1.2); }
+        }
+
+        .debt-label {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+        }
+
+        .debt-amount {
+            font-size: clamp(2rem, 6vw, 4.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .debt-per-capita {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--info-color);
+        }
+
+        [data-theme="dark"] .stat-card {
+            background: var(--card-bg, #2c3e50);
+            color: var(--text-color, #eee);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--info-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--danger-color);
+        }
+
+        .increase-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .increase-item {
+            background: linear-gradient(135deg, var(--info-color), #2980b9);
+            color: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .increase-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(52, 152, 219, 0.4);
+        }
+
+        .increase-item h3 {
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            color: white;
+        }
+
+        .increase-item .amount {
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .comparison-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        [data-theme="dark"] .comparison-section {
+            background: var(--card-bg, #2c3e50);
+            color: var(--text-color, #eee);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .country-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .country-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .country-item {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .country-item:hover {
+            background: var(--info-color);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--warning-color), var(--danger-color));
+            border-radius: 4px;
+            transition: width 2s ease;
+        }
+
+        .source {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .source a {
+            color: var(--info-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .source a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .main-debt-display {
+                padding: 2rem 1.5rem;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 애니메이션 효과 */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .slide-up {
+            transform: translateY(30px);
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 접근성 개선 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* 고대비 모드 */
+        @media (prefers-contrast: high) {
+            .stat-card {
+                border: 2px solid var(--primary-color);
+            }
+            
+            .increase-item {
+                border: 2px solid white;
+            }
+        }
+
+        /* 애니메이션 감소 설정 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="debt-display">
-            <div class="debt-label">🇰🇷 대한민국 국가채무 (D1)</div>
-            <div class="debt-amount blinking" id="debtAmount">1,196,800,000,000,000원</div>
-            <div class="debt-per-capita">국민 1인당 부담: <span id="perCapita">23,400,000</span>원</div>
+    <header class="header">
+        <div class="container">
+            <div class="header-content fade-in">
+                <h1>🇰🇷 대한민국 국가부채 실시간 시계</h1>
+                <p class="header-subtitle">실시간으로 업데이트되는 국가채무 현황을 확인하세요</p>
+            </div>
+        </div>
+    </header>
 
-            <div class="increase-info">
-                <div class="increase-item">
-                    <h3>초당 증가</h3>
-                    <div class="amount" id="perSecond">+1,650,000원</div>
+    <div class="container">
+        <div class="controls slide-up">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                🌙 다크모드
+            </button>
+            <button class="share-btn" onclick="shareContent()">
+                📤 공유하기
+            </button>
+        </div>
+
+        <div class="alert slide-up">
+            <span>⚠️</span>
+            <div>
+                <strong>알림:</strong> 이 데이터는 예측 모델을 기반으로 한 실시간 시뮬레이션입니다. 
+                실제 정확한 수치는 공식 정부 발표를 참조하세요.
+            </div>
+        </div>
+
+        <div class="main-debt-display slide-up">
+            <div class="debt-label" role="heading" aria-level="2">
+                대한민국 국가채무 (D1)
+            </div>
+            <div class="debt-amount" id="debtAmount" aria-live="polite" aria-label="현재 국가채무">
+                <span class="loading"></span>
+            </div>
+            <div class="debt-per-capita">
+                국민 1인당 부담: <span id="perCapita" aria-live="polite">계산 중...</span>원
+            </div>
+        </div>
+
+        <div class="increase-info slide-up">
+            <div class="increase-item">
+                <h3>⏱️ 초당 증가</h3>
+                <div class="amount" id="perSecond">+0원</div>
+            </div>
+            <div class="increase-item">
+                <h3>⏰ 분당 증가</h3>
+                <div class="amount" id="perMinute">+0원</div>
+            </div>
+            <div class="increase-item">
+                <h3>📅 일일 증가</h3>
+                <div class="amount" id="perDay">+0억원</div>
+            </div>
+            <div class="increase-item">
+                <h3>📈 연간 증가율</h3>
+                <div class="amount">4.5%</div>
+            </div>
+        </div>
+
+        <div class="stats-grid slide-up">
+            <div class="stat-card">
+                <h3>🏛️ GDP 대비 국가채무 비율</h3>
+                <div class="stat-value">47.5%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 47.5%"></div>
                 </div>
-                <div class="increase-item">
-                    <h3>분당 증가</h3>
-                    <div class="amount" id="perMinute">+99,000,000원</div>
+                <div class="source">
+                    OECD 평균: 71.1%<br>
+                    <a href="https://ecos.bok.or.kr" target="_blank" rel="noopener">출처: 한국은행 경제통계시스템</a>
                 </div>
-                <div class="increase-item">
-                    <h3>일일 증가</h3>
-                    <div class="amount" id="perDay">+14,300억원</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>📊 공공부문 부채 (D3)</h3>
+                <div class="stat-value">1,713조원</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
                 </div>
-                <div class="increase-item">
-                    <h3>연간 증가율</h3>
-                    <div class="amount">4.5%</div>
+                <div class="source">
+                    <a href="https://kosis.kr" target="_blank" rel="noopener">출처: 통계청 KOSIS</a><br>
+                    (2024년도 기준)
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>💰 국가채무 이자비용</h3>
+                <div class="stat-value">30조원</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 60%"></div>
+                </div>
+                <div class="source">
+                    <a href="https://www.moef.go.kr" target="_blank" rel="noopener">출처: 기획재정부</a><br>
+                    (2025년도 예상치)
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>👥 총인구</h3>
+                <div class="stat-value">5,112만명</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%"></div>
+                </div>
+                <div class="source">
+                    <a href="https://kosis.kr" target="_blank" rel="noopener">출처: 통계청 인구동향</a><br>
+                    (2024년도 기준)
                 </div>
             </div>
         </div>
 
-        <div class="stats-grid" style="margin-top:30px; display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
-            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
-                <h3>🏛️ GDP 대비 국가채무 비율</h3>
-                <div class="stat-value">47.5% (OECD 평균 71.1%)</div>
-                <div class="source">
-                    <a href="https://ecos.bok.or.kr" target="_blank">출처: 한국은행 경제통계시스템</a><br>
-                    (2024년도 기준)
+        <div class="comparison-section slide-up">
+            <h2 class="section-title">🌍 주요국 GDP 대비 국가채무 비교</h2>
+            <div class="country-comparison">
+                <div class="country-item">
+                    <span>🇰🇷 대한민국</span>
+                    <strong>47.5%</strong>
                 </div>
-            </div>
-            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
-                <h3>📊 공공부문 부채 (D3)</h3>
-                <div class="stat-value">1,713조원</div>
-                <div class="source">
-                    <a href="https://kosis.kr" target="_blank">출처: 통계청 KOSIS</a><br>
-                    (2024년도 기준)
+                <div class="country-item">
+                    <span>🇺🇸 미국</span>
+                    <strong>106.7%</strong>
                 </div>
-            </div>
-            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
-                <h3>💰 국가채무 이자비용</h3>
-                <div class="stat-value">30조원</div>
-                <div class="source">
-                    <a href="https://www.moef.go.kr" target="_blank">출처: 기획재정부</a><br>
-                    (2025년도 예상치)
+                <div class="country-item">
+                    <span>🇯🇵 일본</span>
+                    <strong>254.6%</strong>
                 </div>
-            </div>
-            <div class="stat-card" style="background:white;padding:20px;border-radius:10px;box-shadow:0 3px 15px rgba(0,0,0,0.1);">
-                <h3>👥 총인구</h3>
-                <div class="stat-value">5,112만명</div>
-                <div class="source">
-                    <a href="https://kosis.kr" target="_blank">출처: 통계청 인구동향</a><br>
-                    (2024년도 기준)
+                <div class="country-item">
+                    <span>🇩🇪 독일</span>
+                    <strong>63.6%</strong>
+                </div>
+                <div class="country-item">
+                    <span>🇫🇷 프랑스</span>
+                    <strong>111.8%</strong>
+                </div>
+                <div class="country-item">
+                    <span>🇬🇧 영국</span>
+                    <strong>101.9%</strong>
                 </div>
             </div>
         </div>
     </div>
 
+    <footer class="footer">
+        <p>
+            © 2025 대한민국 국가부채 실시간 시계 | 
+            데이터 출처: 기획재정부, 한국은행, 통계청 | 
+            <a href="#" onclick="showDataDisclaimer()">데이터 면책조항</a>
+        </p>
+    </footer>
+
     <script>
-        const INITIAL_DEBT = 1196800000000000; // 1,196.8조원
-        const ANNUAL_INCREASE_RATE = 0.045;
-        const POPULATION = 51120000; // 약 5,112만명
+        // 상수 정의
+        const CONFIG = {
+            INITIAL_DEBT: 1196800000000000, // 1,196.8조원
+            ANNUAL_INCREASE_RATE: 0.045, // 4.5%
+            POPULATION: 51120000, // 약 5,112만명
+            START_TIME: new Date('2025-01-01').getTime(),
+            UPDATE_INTERVAL: 100, // 100ms마다 업데이트 (부드러운 애니메이션)
+            MONTHLY_VARIATIONS: [0.8, 1.2, 0.9, 1.1, 1.0, 0.95, 1.05, 0.85, 1.15, 0.9, 1.0, 1.3]
+        };
 
-        const DEBT_PER_SECOND = (INITIAL_DEBT * ANNUAL_INCREASE_RATE) / (365 * 24 * 60 * 60);
-        const START_TIME = new Date('2025-01-01').getTime();
+        // 전역 변수
+        let animationFrame;
+        let currentDebt = CONFIG.INITIAL_DEBT;
+        let previousDebt = CONFIG.INITIAL_DEBT;
 
-        function updateDebtClock() {
-            const now = Date.now();
-            const elapsed = (now - START_TIME) / 1000;
-            const currentDebt = INITIAL_DEBT + (DEBT_PER_SECOND * elapsed);
+        // 유틸리티 함수들
+        const utils = {
+            formatNumber: (num) => Math.floor(num).toLocaleString('ko-KR'),
+            
+            formatCurrency: (num) => utils.formatNumber(num) + '원',
+            
+            throttle: (func, delay) => {
+                let inThrottle;
+                return function() {
+                    const args = arguments;
+                    const context = this;
+                    if (!inThrottle) {
+                        func.apply(context, args);
+                        inThrottle = true;
+                        setTimeout(() => inThrottle = false, delay);
+                    }
+                }
+            },
 
-            document.getElementById('debtAmount').textContent = Math.floor(currentDebt).toLocaleString('ko-KR') + '원';
+            animateValue: (element, start, end, duration = 1000) => {
+                const startTime = performance.now();
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                    const current = start + (end - start) * easeOutCubic;
+                    
+                    element.textContent = utils.formatCurrency(current);
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                };
+                requestAnimationFrame(animate);
+            }
+        };
 
-            // 국민 1인당 부담 실시간 반영 (단위 원)
-            const perCapita = Math.floor(currentDebt / POPULATION);
-            document.getElementById('perCapita').textContent = perCapita.toLocaleString('ko-KR');
+        // 부채 계산 로직
+        const debtCalculator = {
+            getMonthlyMultiplier: () => {
+                const month = new Date().getMonth();
+                return CONFIG.MONTHLY_VARIATIONS[month] || 1.0;
+            },
 
-            document.getElementById('perSecond').textContent = '+' + Math.floor(DEBT_PER_SECOND).toLocaleString('ko-KR') + '원';
-            document.getElementById('perMinute').textContent = '+' + Math.floor(DEBT_PER_SECOND * 60).toLocaleString('ko-KR') + '원';
-            document.getElementById('perDay').textContent = '+' + Math.floor(DEBT_PER_SECOND * 60 * 60 * 24 / 100000000).toLocaleString('ko-KR') + '억원';
+            calculateCurrentDebt: () => {
+                const now = Date.now();
+                const elapsed = (now - CONFIG.START_TIME) / 1000;
+                const baseIncrease = (CONFIG.INITIAL_DEBT * CONFIG.ANNUAL_INCREASE_RATE) / (365 * 24 * 60 * 60);
+                const monthlyMultiplier = debtCalculator.getMonthlyMultiplier();
+                
+                return CONFIG.INITIAL_DEBT + (baseIncrease * elapsed * monthlyMultiplier);
+            },
+
+            getIncreaseRates: () => {
+                const monthlyMultiplier = debtCalculator.getMonthlyMultiplier();
+                const basePerSecond = (CONFIG.INITIAL_DEBT * CONFIG.ANNUAL_INCREASE_RATE) / (365 * 24 * 60 * 60);
+                const adjustedPerSecond = basePerSecond * monthlyMultiplier;
+                
+                return {
+                    perSecond: adjustedPerSecond,
+                    perMinute: adjustedPerSecond * 60,
+                    perDay: adjustedPerSecond * 60 * 60 * 24
+                };
+            }
+        };
+
+        // UI 업데이트 함수
+        const ui = {
+            updateDebtDisplay: () => {
+                try {
+                    previousDebt = currentDebt;
+                    currentDebt = debtCalculator.calculateCurrentDebt();
+                    
+                    const debtElement = document.getElementById('debtAmount');
+                    const perCapitaElement = document.getElementById('perCapita');
+                    
+                    if (debtElement && perCapitaElement) {
+                        // 부드러운 숫자 변화 애니메이션
+                        if (Math.abs(currentDebt - previousDebt) > 1000000) { // 100만원 이상 차이날 때만 애니메이션
+                            utils.animateValue(debtElement, previousDebt, currentDebt, 500);
+                        } else {
+                            debtElement.textContent = utils.formatCurrency(currentDebt);
+                        }
+                        
+                        // 1인당 부담
+                        const perCapita = Math.floor(currentDebt / CONFIG.POPULATION);
+                        perCapitaElement.textContent = utils.formatNumber(perCapita);
+                        
+                        // 증가율 정보 업데이트
+                        ui.updateIncreaseRates();
+                    }
+                } catch (error) {
+                    console.error('부채 표시 업데이트 중 오류:', error);
+                    ui.showError('데이터 업데이트 중 문제가 발생했습니다.');
+                }
+            },
+
+            updateIncreaseRates: () => {
+                const rates = debtCalculator.getIncreaseRates();
+                
+                const elements = {
+                    perSecond: document.getElementById('perSecond'),
+                    perMinute: document.getElementById('perMinute'),
+                    perDay: document.getElementById('perDay')
+                };
+
+                if (elements.perSecond) {
+                    elements.perSecond.textContent = '+' + utils.formatCurrency(rates.perSecond);
+                }
+                if (elements.perMinute) {
+                    elements.perMinute.textContent = '+' + utils.formatCurrency(rates.perMinute);
+                }
+                if (elements.perDay) {
+                    elements.perDay.textContent = '+' + Math.floor(rates.perDay / 100000000).toLocaleString('ko-KR') + '억원';
+                }
+            },
+
+            showError: (message) => {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert';
+                errorDiv.innerHTML = `
+                    <span>❌</span>
+                    <div><strong>오류:</strong> ${message}</div>
+                `;
+                
+                const container = document.querySelector('.container');
+                const firstChild = container.firstChild;
+                container.insertBefore(errorDiv, firstChild);
+                
+                setTimeout(() => {
+                    if (errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 5000);
+            },
+
+            initializeAnimations: () => {
+                const elements = document.querySelectorAll('.fade-in, .slide-up');
+                elements.forEach((el, index) => {
+                    el.style.animationDelay = `${index * 0.1}s`;
+                });
+            }
+        };
+
+        // 테마 관리
+        const theme = {
+            toggle: () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                const themeButton = document.querySelector('.theme-toggle');
+                if (themeButton) {
+                    themeButton.innerHTML = newTheme === 'dark' ? '☀️ 라이트모드' : '🌙 다크모드';
+                }
+            },
+
+            init: () => {
+                const savedTheme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                
+                const themeButton = document.querySelector('.theme-toggle');
+                if (themeButton) {
+                    themeButton.innerHTML = savedTheme === 'dark' ? '☀️ 라이트모드' : '🌙 다크모드';
+                }
+            }
+        };
+
+        // 공유 기능
+        const sharing = {
+            share: async () => {
+                const shareData = {
+                    title: '대한민국 국가부채 실시간 현황',
+                    text: `현재 국가부채: ${utils.formatCurrency(currentDebt)}\n국민 1인당 부담: ${utils.formatNumber(Math.floor(currentDebt / CONFIG.POPULATION))}원`,
+                    url: window.location.href
+                };
+
+                try {
+                    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                        await navigator.share(shareData);
+                    } else {
+                        // 클립보드 복사 대체
+                        await navigator.clipboard.writeText(`${shareData.title}\n${shareData.text}\n${shareData.url}`);
+                        sharing.showToast('링크가 클립보드에 복사되었습니다!');
+                    }
+                } catch (error) {
+                    console.error('공유 중 오류:', error);
+                    sharing.showToast('공유 중 문제가 발생했습니다.');
+                }
+            },
+
+            showToast: (message) => {
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--success-color);
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 10px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                toast.textContent = message;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+        };
+
+        // 데이터 면책조항
+        function showDataDisclaimer() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.8);
+                z-index: 1001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            `;
+
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white;
+                padding: 2rem;
+                border-radius: 16px;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+            `;
+
+            content.innerHTML = `
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color);">📋 데이터 면책조항</h3>
+                <div style="line-height: 1.6; color: #555;">
+                    <p><strong>중요 안내사항:</strong></p>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li>이 웹사이트의 부채 계산은 예측 모델 기반의 시뮬레이션입니다.</li>
+                        <li>실제 국가부채는 정부 정책, 경제 상황, 특별 지출 등에 따라 변동될 수 있습니다.</li>
+                        <li>정확한 공식 수치는 기획재정부, 한국은행 등 관련 기관 발표를 확인하세요.</li>
+                        <li>본 사이트는 교육 및 정보 제공 목적으로 운영됩니다.</li>
+                    </ul>
+                    <p><strong>데이터 출처:</strong></p>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li>기획재정부 (www.moef.go.kr)</li>
+                        <li>한국은행 경제통계시스템 (ecos.bok.or.kr)</li>
+                        <li>통계청 KOSIS (kosis.kr)</li>
+                    </ul>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        style="background: var(--info-color); color: white; border: none; 
+                               padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; 
+                               font-weight: 600; margin-top: 1rem;">
+                    확인
+                </button>
+            `;
+
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
         }
 
-        updateDebtClock();
-        setInterval(updateDebtClock, 1000);
+        // 성능 최적화된 업데이트 함수
+        const throttledUpdate = utils.throttle(ui.updateDebtDisplay, CONFIG.UPDATE_INTERVAL);
+
+        // 메인 업데이트 루프
+        function startDebtClock() {
+            const update = () => {
+                throttledUpdate();
+                animationFrame = requestAnimationFrame(update);
+            };
+            
+            // 초기 로딩 완료 후 시작
+            setTimeout(() => {
+                ui.updateDebtDisplay();
+                update();
+            }, 500);
+        }
+
+        // 전역 함수들 (HTML에서 호출)
+        window.toggleTheme = theme.toggle;
+        window.shareContent = sharing.share;
+        window.showDataDisclaimer = showDataDisclaimer;
+
+        // 키보드 단축키
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'd':
+                        e.preventDefault();
+                        theme.toggle();
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        sharing.share();
+                        break;
+                }
+            }
+        });
+
+        // 페이지 가시성 API - 탭이 비활성화되면 업데이트 중지
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (animationFrame) {
+                    cancelAnimationFrame(animationFrame);
+                }
+            } else {
+                startDebtClock();
+            }
+        });
+
+        // 윈도우 포커스/블러 이벤트
+        window.addEventListener('focus', startDebtClock);
+        window.addEventListener('blur', () => {
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+        });
+
+        // 네트워크 상태 모니터링
+        window.addEventListener('online', () => {
+            ui.showError('인터넷 연결이 복구되었습니다.');
+        });
+
+        window.addEventListener('offline', () => {
+            ui.showError('인터넷 연결이 끊어졌습니다. 오프라인 모드로 동작합니다.');
+        });
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 대한민국 국가부채 시계 초기화 중...');
+            
+            // 테마 초기화
+            theme.init();
+            
+            // 애니메이션 초기화
+            ui.initializeAnimations();
+            
+            // 부채 시계 시작
+            startDebtClock();
+            
+            // PWA 설치 프롬프트 (선택사항)
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                // 설치 버튼 표시 (필요시)
+                const installBtn = document.createElement('button');
+                installBtn.textContent = '📱 앱 설치';
+                installBtn.className = 'theme-toggle';
+                installBtn.onclick = async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log(`PWA 설치 결과: ${outcome}`);
+                        deferredPrompt = null;
+                        installBtn.remove();
+                    }
+                };
+                
+                document.querySelector('.controls').appendChild(installBtn);
+            });
+            
+            console.log('✅ 초기화 완료!');
+        });
+
+        // CSS 애니메이션 추가
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            
+            /* 부드러운 숫자 변화 */
+            .debt-amount {
+                transition: color 0.3s ease;
+            }
+            
+            .debt-amount.increasing {
+                color: #e74c3c;
+            }
+            
+            /* 로딩 상태 개선 */
+            .loading-state {
+                opacity: 0.6;
+                pointer-events: none;
+            }
+            
+            /* 고성능 애니메이션 */
+            .stat-card, .increase-item {
+                will-change: transform;
+            }
+            
+            /* 스크롤 개선 */
+            html {
+                scroll-behavior: smooth;
+            }
+            
+            /* 선택 불가능한 텍스트 */
+            .debt-amount, .increase-item .amount {
+                user-select: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 에러 핸들링
+        window.addEventListener('error', (e) => {
+            console.error('전역 에러:', e);
+            ui.showError('예기치 않은 오류가 발생했습니다.');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            console.error('처리되지 않은 Promise 거부:', e);
+            ui.showError('비동기 작업 중 오류가 발생했습니다.');
+        });
+
     </script>
 </body>
 </html>
